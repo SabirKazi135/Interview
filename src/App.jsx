@@ -1,108 +1,156 @@
 import { useState } from "react";
 
 function App() {
-  const [userSearch, setUserSearch] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState("");
+  const [newNotification, setNewNotification] = useState("");
 
-  function handleSearch(e) {
-    e.preventDefault();
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      text: "Welcome to the dashboard",
+      isRead: false,
+    },
+    {
+      id: 2,
+      text: "Your profile is 80% complete",
+      isRead: false,
+    },
+    {
+      id: 3,
+      text: "New message received",
+      isRead: false,
+    },
+  ]);
 
-    if (userSearch.trim() === "") {
-      setError("Please enter a user name.");
-      setData([]);
-      setLoading(false);
-      return;
-    }
+  function handleAdd() {
+    if (newNotification.trim() === "") return;
 
-    async function fetchData() {
-      setLoading(true);
-      setError("");
-      setData([]);
+    const notification = {
+      id: Date.now(),
+      text: newNotification.trim(),
+      isRead: false,
+    };
 
-      try {
-        const response = await fetch(
-          `https://jsonplaceholder.typicode.com/users?name_like=${userSearch}`,
-        );
+    setNotifications((prev) => [notification, ...prev]);
 
-        if (!response.ok) {
-          setError("Unable to fetch users.");
-        }
-
-        const data = await response.json();
-
-        if (data.length === 0) {
-          setError("No users found.");
-          setData([]);
-          return;
-        }
-
-        setData(data);
-      } catch (error) {
-        setError("Unable to fetch users.");
-        console.error("Error fetching user data:", error);
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
+    setNewNotification("");
   }
 
+  function handleRead(id) {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? { ...notification, isRead: true }
+          : notification,
+      ),
+    );
+  }
+
+  function handleDelete(id) {
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id),
+    );
+  }
+
+  const unreadCount = notifications.filter(
+    (notification) => !notification.isRead,
+  ).length;
+
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gray-900 flex justify-center items-center p-6">
       <div className="w-full max-w-2xl bg-gray-800 rounded-xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-white mb-6">
-          User Search
+        <h1 className="text-3xl font-bold text-center text-white mb-8">
+          Notification Center
         </h1>
 
-        <form onSubmit={handleSearch} className="flex gap-3 mb-6">
+        {/* Add Notification */}
+
+        <div className="flex gap-3 mb-6">
           <input
             type="text"
-            placeholder="Search users..."
-            value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter notification..."
+            value={newNotification}
+            onChange={(e) => setNewNotification(e.target.value)}
+            className="flex-1 px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            onClick={handleAdd}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition"
           >
-            Search
+            Add
           </button>
-        </form>
-
-        <div>
-          {loading ? (
-            <p className="text-center text-blue-400 font-medium">Loading...</p>
-          ) : (
-            data.length > 0 && (
-              <div className="space-y-4">
-                {data.map((user) => (
-                  <div
-                    key={user.id}
-                    className="bg-gray-700 rounded-lg p-4 border border-gray-600"
-                  >
-                    <p className="text-lg font-semibold text-white">
-                      {user.name}
-                    </p>
-
-                    <p className="text-gray-300">
-                      <span className="font-medium">Email:</span> {user.email}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )
-          )}
-
-          {error && (
-            <p className="mt-4 text-center text-red-400 font-medium">{error}</p>
-          )}
         </div>
+
+        {/* Summary */}
+
+        <div className="bg-gray-700 rounded-lg p-4 mb-6 flex justify-between">
+          <p className="text-white">
+            Total Notifications:{" "}
+            <span className="font-bold">{notifications.length}</span>
+          </p>
+
+          <p className="text-yellow-400">
+            Unread: <span className="font-bold">{unreadCount}</span>
+          </p>
+        </div>
+
+        {/* Empty State */}
+
+        {notifications.length === 0 ? (
+          <div className="text-center text-gray-400 py-10">
+            No notifications.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className="bg-gray-700 rounded-lg p-4 flex justify-between items-center"
+              >
+                <div>
+                  <p
+                    className={`font-medium ${
+                      notification.isRead
+                        ? "text-gray-400 line-through"
+                        : "text-white"
+                    }`}
+                  >
+                    {notification.text}
+                  </p>
+
+                  <p
+                    className={`text-sm mt-1 ${
+                      notification.isRead ? "text-green-400" : "text-yellow-400"
+                    }`}
+                  >
+                    {notification.isRead ? "Read" : "Unread"}
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    disabled={notification.isRead}
+                    onClick={() => handleRead(notification.id)}
+                    className={`px-4 py-2 rounded-lg text-white transition ${
+                      notification.isRead
+                        ? "bg-gray-500 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
+                  >
+                    Mark as Read
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(notification.id)}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
