@@ -1,135 +1,54 @@
-function createShoppingCart() {
-  let items = [];
-
-  function addItem(item) {
-    if (item.trim() !== "") {
-      items.push(item);
-      console.log(`Item added: ${item}`);
-    } else {
-      console.log("Item name cannot be empty.");
-    }
-  }
-
-  function removeItem(item) {
-    if (items.includes(item)) {
-      items = items.filter((currentItem) => currentItem !== item);
-      console.log(`Item Removed: ${item}`);
-    } else {
-      console.log("Item not found.");
-    }
-  }
-
-  function showItems() {
-    if (items.length !== 0) {
-      console.log("Shopping Cart:");
-      items.forEach((item, index) => {
-        console.log(`${index + 1}. ${item}`);
-      });
-    } else {
-      console.log("Shopping cart is empty");
-    }
-  }
-
-  function totalItems() {
-    console.log(`Total Items: ${items.length}`);
-  }
-
-  return {
-    addItem,
-    removeItem,
-    showItems,
-    totalItems,
-  };
+function login(loginId) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (loginId === 101) {
+        resolve({ userId: 101 });
+      } else {
+        reject("wrong login id");
+      }
+    }, 1000);
+  });
 }
 
-console.log("========== SABIR CART ==========");
+function getUser(userId) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (userId === 101) {
+        resolve({ Id: 101, name: "sabir" });
+      } else {
+        reject("wrong user id");
+      }
+    }, 1000);
+  });
+}
 
-const sabirCart = createShoppingCart();
+function getOrders(orderId) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (orderId.name === "sabir") {
+        resolve(["Laptop", "Mouse", "Keyboard"]);
+      } else {
+        reject("wrong order id");
+      }
+    }, 1000);
+  });
+}
 
-sabirCart.showItems(); // Empty cart
-
-sabirCart.totalItems();
-
-console.log("\n--- Add Items ---");
-
-sabirCart.addItem("Laptop");
-sabirCart.addItem("Mouse");
-sabirCart.addItem("Keyboard");
-sabirCart.showItems();
-
-sabirCart.totalItems();
-
-console.log("\n--- Add Duplicate ---");
-
-sabirCart.addItem("Mouse");
-sabirCart.showItems();
-
-sabirCart.totalItems();
-
-console.log("\n--- Invalid Item ---");
-
-sabirCart.addItem("");
-sabirCart.addItem("   ");
-
-console.log("\n--- Remove Existing Item ---");
-
-sabirCart.removeItem("Mouse");
-sabirCart.showItems();
-
-sabirCart.totalItems();
-
-console.log("\n--- Remove Non Existing Item ---");
-
-sabirCart.removeItem("Phone");
-
-console.log("\n--- Remove Remaining Items ---");
-
-sabirCart.removeItem("Laptop");
-sabirCart.removeItem("Keyboard");
-sabirCart.removeItem("Mouse");
-
-sabirCart.showItems();
-
-sabirCart.totalItems();
-
-console.log("\n===============================");
-console.log("========== JOHN CART ==========");
-console.log("===============================");
-
-const johnCart = createShoppingCart();
-
-johnCart.showItems();
-
-johnCart.addItem("Phone");
-johnCart.addItem("Charger");
-
-johnCart.showItems();
-
-johnCart.totalItems();
-
-console.log("\n===============================");
-console.log("====== INDEPENDENCE TEST ======");
-console.log("===============================");
-
-console.log("Sabir Cart:");
-sabirCart.showItems();
-
-console.log("John Cart:");
-johnCart.showItems();
-
-console.log("\n--- Add New Item To John Only ---");
-
-johnCart.addItem("Earphones");
-
-console.log("Sabir Cart:");
-sabirCart.showItems();
-
-console.log("John Cart:");
-johnCart.showItems();
-
-console.log("\n===============================");
-console.log("========= FINAL CHECK =========");
-console.log("===============================");
-
-sabirCart.totalItems();
-johnCart.totalItems();
+login(101)
+  .then((result) => {
+    console.log(result);
+    getUser(result.userId);
+  })
+  .then((result) => {
+    console.log(result);
+    return getOrders(result);
+  })
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((error) => {
+    console.log("Error:", error);
+  })
+  .finally(() => {
+    console.log("Order processing finished");
+  });
