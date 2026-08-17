@@ -8,7 +8,5 @@ import Timer from "./Timer.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <App />
-    {/* <Search /> */}
-    {/* <Timer /> */}
   </StrictMode>,
 );
