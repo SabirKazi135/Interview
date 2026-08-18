@@ -1,17 +1,20 @@
-async function fetchUsers() {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+const [users, setUsers] = useState([
+  { id: 1, name: "A" },
+  { id: 2, name: "B" },
+  { id: 3, name: "C" },
+]);
 
-    if (!response.ok) {
-      throw new Error("Error after responce");
+setUsers(
+  users.map((user) => {
+    if (user.id === 2) {
+      return {
+        ...user,
+        name: "sabir",
+      };
     }
 
-    const data = await response.json();
+    return user;
+  }),
+);
 
-    console.log(data);
-  } catch (error) {
-    console.log("error", error);
-  }
-}
-
-fetchUsers();
+console.log(users);
